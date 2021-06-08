@@ -1,3 +1,4 @@
+import sys
 import urllib.request
 import json
 from bs4 import BeautifulSoup
@@ -7,9 +8,15 @@ baseUrl = "https://www.silla.ac.kr"
 
 # BeautifulSoup 객체생성
 noticeUrl = ["/ko/index.php?pCode=anotice", "/ko/index.php?pCode=gnotice"]
-print("1 학사공지 2 일반공지")
-selectBoard = int(input())-1
-dataJson=['haksa.json','normal.json']
+print("0 학사공지 1 일반공지")
+# param = int(input()) - 1
+param = int(sys.argv[1])
+if param == 0:
+    print("학사공지 선택")
+if param == 1:
+    print("일반공지 선택")
+selectBoard = param
+dataJson = ['haksa.json', 'normal.json']
 
 url = baseUrl + noticeUrl[selectBoard]
 req = urllib.request.urlopen(url)
@@ -39,7 +46,7 @@ for title in titleElements:
     parse['title'].append(titleName)
 
 for link in linkElements:
-    href =  link.get('href')
+    href = link.get('href')
     parse['link'].append(href)
 
 # 지워야할 요소 검출
@@ -53,7 +60,8 @@ for removeindex in reversed(removeList):
     del parse.get('title')[removeindex]
     del parse.get('link')[removeindex]
 
-#Convert Json
+# Convert Json
 
 with open(dataJson[selectBoard], 'w') as outfile:
     json.dump(parse, outfile)
+    print("파싱완료")
